@@ -24,6 +24,20 @@ export default function App() {
   const pageFromUrl = Number(searchParams.get("page")) || 1;
   const [totalPages, setTotalPages] = useState(1);
 
+    //Ocultar scroll del body cuando se abra el modal
+    useEffect(() => {
+      if (selectedCharacter) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "auto";
+      }
+  
+      return () => {
+        document.body.style.overflow = "auto";
+      };
+    }, [selectedCharacter])
+  
+
   const fetchCharacters = async () => {
     try {
       setLoading(true);
@@ -84,6 +98,7 @@ export default function App() {
     setSelectedCharacter(data);
     setModalLoading(false);
   }
+
 
   return (
     <main className="container mx-auto px-4 py-12">
