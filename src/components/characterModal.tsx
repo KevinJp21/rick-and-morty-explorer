@@ -9,8 +9,8 @@ export default function CharacterModal({ character, onClose }: Props) {
     if (!character) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z50 p-4">
-            <div className="bg-white rounded-2xl max-w-4xl w-full max-h[90vh] overflow-hidden shadow-2xl">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 p-4 overflow-y-auto">
+            <div className="mx-auto bg-white rounded-2xl max-w-4xl w-full max-h[90dvh] overflow-hidden shadow-2xl">
                 <div className="relative">
                     <div className="relative h-48 bg-linear-to-r from-blue-500 to-teal-500">
                         <img src={character.image} alt={character.name}
@@ -58,6 +58,28 @@ export default function CharacterModal({ character, onClose }: Props) {
                                     {character.gender}
                                 </p>
                             </div>
+                        </div>
+                    </div>
+                    <div className="border-t border-t-gray-200 pt-6">
+                        <h3 className="text-lg font-bold text-gray-900 mb-4">
+                            Episodios ({character.episode.length})
+                        </h3>
+                        <div className="max-h-64 overflow-y-auto space-y-2 custom-scrollbar">
+                            {character.episodes.map((epi) => (
+                                <div key={epi.id} className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors p-3 rounded-lg">
+                                    <div>
+                                        <p className="font-medium text-gray-900">
+                                            {epi.name}
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-0.5">
+                                            {epi.air_date}
+                                        </p>
+                                    </div>
+                                    <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                                        {epi.episode}
+                                    </span>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
