@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getCharacters } from "../services/characterService";
 import type { Character } from "../types/character";
+import type { AxiosError } from "axios";
 
 type UseCharactersResult = {
   characters: Character[];
@@ -31,8 +32,9 @@ export function useCharacters(page: number, search: string): UseCharactersResult
       if (!data.results.length) {
         setNoResults(true);
       }
-    } catch (err: any) {
-      const status = err?.response?.status;
+    } catch (err) {
+      const axiosError = err as AxiosError<unknown>;
+      const status = axiosError.response?.status;
 
       if (status === 404) {
         setCharacters([]);
