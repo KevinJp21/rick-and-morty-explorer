@@ -1,5 +1,7 @@
 # Rick and Morty Explorer
 
+![demo](https://github.com/KevinJp21/rick-and-morty-explorer/blob/c7cb2cb4e9dad69b9a4bcb01881ec902c027511f/public/demo.png)
+
 Aplicación React + TypeScript + Vite que permite explorar personajes de la API de Rick and Morty con búsqueda, paginación y detalle en modal.
 
 ---
