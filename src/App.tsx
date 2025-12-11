@@ -1,28 +1,48 @@
 import { useEffect, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { getCharacters } from "./services/characterService"
 import type { Character } from "./types/character"
 import CharacterCard from "./components/characterCard"
+import Pagination from "./components/pagination"
 
 export default function App() {
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const pageFromUrl = Number(searchParams.get("page")) || 1;
+
   const [characters, setCharacters] = useState<Character[]>([])
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCharacters = async () => {
-      try {
-        const data = await getCharacters(1);
-        setCharacters(data.results);
-      } catch (error) {
-        console.error("Error cargando personajes:", error);
-        setError("Error al cargar los personajes, intente nuevamente");
-      } finally {
-        setLoading(false)
-      }
-    };
+  const fetchCharacters = async () => {
+    try {
+      setLoading(true);
+      setError("")
+      const data = await getCharacters(pageFromUrl);
+      setCharacters(data.results);
+      setTotalPages(data.info.pages);
+    } catch (err) {
+      setError("Error al cargar los personajes, intente nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchCharacters();
-  }, []);
+  }, [pageFromUrl]);
+
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: page.toString() });
+  }
+
+  const retryFetch = () => {
+    setError(null);
+    setLoading(true);
+    fetchCharacters();
+  }
 
   if (loading) {
     return (
@@ -40,7 +60,7 @@ export default function App() {
         <p className="text-red-600 text-xl font-semibold">{error}</p>
         <button
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
-          onClick={() => window.location.reload()}
+          onClick={retryFetch}
         >
           Reintentar
         </button>
@@ -64,6 +84,12 @@ export default function App() {
           <CharacterCard key={char.id} name={char.name} image={char.image} species={char.species} status={char.status} />
         ))}
       </section>
+
+      <Pagination 
+        currentPage={pageFromUrl}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
     </main>
   )
