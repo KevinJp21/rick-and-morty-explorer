@@ -57,6 +57,9 @@ describe("useCharacters", () => {
     ],
   };
 
+  //Mock solo del personaje rick para pruebas de busqueda
+  const mockRickOnly = { ...mockCharacterResponse, results: [mockCharacterResponse.results[0]] };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -90,4 +93,17 @@ describe("useCharacters", () => {
     expect(result.current.noResults).toBe(false);
     expect(mockGetCharacters).toHaveBeenCalledWith(1, "");
   });
+
+  it("debe manejar búsqueda con parámetros", async () => {
+    mockGetCharacters.mockResolvedValue(mockRickOnly);
+
+    const { result } = renderHook(() => useCharacters(1, "Rick"));
+
+    await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+    });
+
+    expect(mockGetCharacters).toHaveBeenCalledWith(1, "Rick");
+    expect(result.current.characters).toHaveLength(1);
+  })
 });
