@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# Rick and Morty Explorer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación React + TypeScript + Vite que permite explorar personajes de la API de Rick and Morty con búsqueda, paginación y detalle en modal.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tabla de contenido
 
-## React Compiler
+* Demo
+* Stack y dependencias
+* Funcionalidades
+* Arquitectura y organización
+* Ejecución y scripts
+* Decisiones clave
+* Posibles mejoras
+* Autor y fecha
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Demo
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* Búsqueda por nombre y paginación sobre los resultados.
+* Modal con detalles y episodios de cada personaje.
+* Manejo de estados de carga, error y “sin resultados”.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+URL de ejemplo para filtrar y paginar:
+`http://localhost:5173/?page=2&search=Rick`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Stack y dependencias
+
+* React 18 + TypeScript
+* Vite (desarrollo y build)
+* react-router-dom (manejo de query params para paginación y búsqueda)
+* Axios (HTTP) mediante helper `http.ts`
+* Tailwind CSS (estilos utilitarios)
+* Icons: lucide-react
+
+---
+
+## Funcionalidades
+
+* **Listado de personajes** con paginación controlada por query params.
+* **Búsqueda por nombre** sincronizada con la URL.
+* **Modal de detalle** con datos extendidos:
+
+  * Origen, Localización, Género.
+  * Historial de episodios con nombre y código (ej: "S01E01 - Pilot").
+* **Estados UI**: loading, error, y “sin resultados”.
+* **Bloqueo de scroll** del body al abrir el modal.
+* **Persistencia de estado**: página y búsqueda se mantienen en la URL al recargar.
+
+---
+
+## Arquitectura y organización
+
+* `src/App.tsx`: coordina búsqueda, paginación, consumo del hook de datos y apertura/cierre del modal.
+* `src/hooks/useCharacters.ts`: hook que encapsula obtención de personajes, estados (`loading`, `error`, `noResults`, `totalPages`) y función `retry`.
+* `src/components/charactersSection.tsx`: renderiza lista de personajes y estados (loading/error/vacío).
+* `src/components/searchBar.tsx`: input controlado de búsqueda.
+* `src/components/pagination.tsx`: paginación con control de botones y número de página.
+* `src/components/characterModal.tsx`: modal con detalle de personaje, carga y manejo de errores.
+* `src/components/characterCard.tsx`: tarjeta de personaje.
+* `src/services/*.ts`: servicios HTTP a la API (personajes y detalles), tipados con TypeScript.
+* `src/utils/http.ts`: instancia base de Axios.
+* `src/types/*`: tipados compartidos, interfaces y tipos TS.
+
+---
+
+## Ejecución y scripts
+
+```
+pnpm install
+pnpm run dev       # modo desarrollo
+pnpm run build     # build producción
+pnpm run preview   # sirve el build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Decisiones clave
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+* **Custom hook `useCharacters`**: separa lógica de datos del componente y facilita reuso/testing.
+* **Manejo de 404** como “sin resultados”: normalizado para UX consistente.
+* **Estado en URL**: `page` y `search` permiten compartir/enlazar resultados.
+* **Modal accesible**: bloqueo de scroll del body mientras está abierto.
+* **Tipado seguro**: todos los servicios, hooks y componentes tipados para mejorar autocompletado y legibilidad.
+
+---
