@@ -15,6 +15,7 @@ export default function App() {
   const [characters, setCharacters] = useState<Character[]>([])
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [noResults, setNoResults] = useState(false);
 
   //Ventana modal Detalles del personaje
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterDetails | null>(null);
@@ -49,12 +50,25 @@ export default function App() {
   const fetchCharacters = async () => {
     try {
       setLoading(true);
-      setError("")
+      setError(null);
+      setNoResults(false);
       const data = await getCharacters(pageFromUrl, searchFromUrl);
       setCharacters(data.results);
       setTotalPages(data.info.pages);
-    } catch (err) {
-      setError("Error al cargar los personajes, intente nuevamente.");
+
+      if (!data.results.length) {
+        setNoResults(true);
+      }
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 404) {
+        setCharacters([]);
+        setTotalPages(1);
+        setNoResults(true);
+        setError(null);
+      } else {
+        setError("Error al cargar los personajes, intente nuevamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -65,38 +79,13 @@ export default function App() {
   }, [pageFromUrl, searchFromUrl]);
 
   const handlePageChange = (page: number) => {
-    setSearchParams({ page: page.toString() });
+    setSearchParams({ page: page.toString(), search: searchFromUrl });
   }
 
   const retryFetch = () => {
     setError(null);
     setLoading(true);
     fetchCharacters();
-  }
-
-  if (loading) {
-    return (
-      <div className="text-center mt-20 flex flex-col items-center justify-center">
-        <LoaderCircle className="text-teal-500 animate-spin mb-1" size={64} />
-        <p className="text-gray-900 text-2xl text-center">
-          Cargando personajes..
-        </p>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="text-center mt-20">
-        <p className="text-red-600 text-xl font-semibold">{error}</p>
-        <button
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
-          onClick={retryFetch}
-        >
-          Reintentar
-        </button>
-      </div>
-    )
   }
 
   const openCharacterModal = async (id: number) => {
@@ -139,24 +128,58 @@ export default function App() {
         />
 
       </header>
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-        {characters.map((char) => (
-          <CharacterCard
-            key={char.id}
-            name={char.name}
-            image={char.image}
-            species={char.species}
-            status={char.status}
-            onClick={() => openCharacterModal(char.id)}
-          />
-        ))}
+      <section className="min-h-[260px] mb-8">
+        {loading && (
+          <div className="text-center mt-10 flex flex-col items-center justify-center">
+            <LoaderCircle className="text-teal-500 animate-spin mb-1" size={64} />
+            <p className="text-gray-900 text-2xl text-center">
+              Cargando personajes..
+            </p>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="text-center mt-10">
+            <p className="text-red-600 text-xl font-semibold">{error}</p>
+            <button
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
+              onClick={retryFetch}
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && noResults && (
+          <div className="text-center mt-10">
+            <p className="text-gray-700 text-lg font-semibold">No se encontraron personajes{searchFromUrl ? ` para "${searchFromUrl}"` : ""}.</p>
+            <p className="text-gray-500 mt-2">Prueba con otro nombre o limpia la búsqueda.</p>
+          </div>
+        )}
+
+        {!loading && !error && !noResults && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {characters.map((char) => (
+              <CharacterCard
+                key={char.id}
+                name={char.name}
+                image={char.image}
+                species={char.species}
+                status={char.status}
+                onClick={() => openCharacterModal(char.id)}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
-      <Pagination
-        currentPage={pageFromUrl}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+      {!loading && !error && !noResults && (
+        <Pagination
+          currentPage={pageFromUrl}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
 
       <CharacterModal
         character={selectedCharacter}

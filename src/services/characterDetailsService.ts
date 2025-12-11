@@ -8,7 +8,7 @@ export const getCharacterDetails = async (id: number): Promise<CharacterDetails>
     //Obtener IDs de episodios
     const episodeIds = character.episode.map(url => url.split("/").pop()).join(",");
 
-    const { data: episodesData } = await http.get(`/episodes/${episodeIds}`);
+    const { data: episodesData } = await http.get(`/episode/${episodeIds}`);
 
     const episodes = Array.isArray(episodesData) ? episodesData : [episodesData];
 
