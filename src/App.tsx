@@ -94,6 +94,7 @@ export default function App() {
   }
 
   const openCharacterModal = async (id: number) => {
+    setModalError(null);
 
     try {
       setModalLoading(true);
@@ -103,11 +104,10 @@ export default function App() {
       setModalLoading(false);
     } catch (err) {
       console.error(err);
-      setModalError("Error al cargar el personaje")
+      setModalError("Error al cargar el personaje");
     } finally {
       setModalLoading(false);
     }
-
   }
 
 
@@ -145,7 +145,11 @@ export default function App() {
         character={selectedCharacter}
         loading={modalLoading}
         error={modalError}
-        onClose={() => setSelectedCharacter(null)}
+        onClose={() => {
+          setSelectedCharacter(null);
+          setModalError(null);
+          setModalLoading(false);
+        }}
       />
 
     </main>
