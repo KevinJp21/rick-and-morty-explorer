@@ -82,9 +82,39 @@ pnpm run preview   # sirve el build
 ## Decisiones clave
 
 * **Custom hook `useCharacters`**: separa lógica de datos del componente y facilita reuso/testing.
-* **Manejo de 404** como “sin resultados”: normalizado para UX consistente.
+* **Manejo de 404** como "sin resultados": normalizado para UX consistente.
 * **Estado en URL**: `page` y `search` permiten compartir/enlazar resultados.
 * **Modal accesible**: bloqueo de scroll del body mientras está abierto.
 * **Tipado seguro**: todos los servicios, hooks y componentes tipados para mejorar autocompletado y legibilidad.
+
+---
+
+## Testing
+
+El proyecto incluye pruebas unitarias para el hook `useCharacters` utilizando **Vitest** y **@testing-library/react**.
+
+### Ejecutar tests
+
+```bash
+pnpm test          # modo watch (se ejecuta continuamente)
+```
+
+### Tests implementados
+
+Los siguientes casos de prueba están cubiertos en `src/hooks/useCharacters.test.ts`:
+
+1. **Estado inicial**: Verifica que el hook inicia con `loading: true` y estados vacíos.
+2. **Carga exitosa**: Valida que los personajes se cargan correctamente y se actualizan los estados.
+3. **Búsqueda con parámetros**: Confirma que la búsqueda se ejecuta con los parámetros correctos.
+4. **Sin resultados**: Verifica que `noResults` se establece cuando la respuesta está vacía.
+5. **Error 404**: Valida que los errores 404 se manejan como "sin resultados" en lugar de error genérico.
+6. **Otros errores**: Confirma que errores diferentes a 404 muestran el mensaje de error apropiado.
+7. **Función retry**: Verifica que la función `retry` permite reintentar la carga después de un error.
+
+### Stack de testing
+
+* **Vitest**: Framework de testing rápido y compatible con Vite.
+* **@testing-library/react**: Utilidades para testear hooks de React (`renderHook`, `waitFor`).
+* **jsdom**: Entorno DOM simulado para ejecutar tests de React.
 
 ---

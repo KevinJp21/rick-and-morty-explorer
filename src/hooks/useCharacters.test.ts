@@ -163,5 +163,33 @@ describe("useCharacters", () => {
         );
         expect(result.current.noResults).toBe(false);
     });
-  })
+  });
+
+  it("debe permitir retry después de un error", async () => {
+    const genericError = {
+      response: { status: 500 },
+    };
+    mockGetCharacters.mockRejectedValueOnce(genericError);
+    mockGetCharacters.mockResolvedValueOnce(mockCharacterResponse);
+
+    const { result } = renderHook(() => useCharacters(1, ""));
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBeTruthy();
+
+    // Retry
+    await result.current.retry();
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBeNull();
+    expect(result.current.characters).toHaveLength(2);
+    expect(mockGetCharacters).toHaveBeenCalledTimes(2);
+  });
+
 });
