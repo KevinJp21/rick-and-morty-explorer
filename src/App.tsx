@@ -7,6 +7,7 @@ import Pagination from "./components/pagination"
 import type { CharacterDetails } from "./types/episode"
 import { getCharacterDetails } from "./services/characterDetailsService"
 import CharacterModal from "./components/characterModal"
+import { LoaderCircle } from "lucide-react"
 
 export default function App() {
 
@@ -68,10 +69,11 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="text-center mt-20">
-        <p className="text-blue-600 text-xl font-semibold">
-          Cargando personajes...
-        </p>
+      <div className="text-center mt-20 flex flex-col items-center justify-center">
+        <LoaderCircle className="text-teal-500 animate-spin mb-1" size={64}/>
+          <p className="text-gray-900 text-2xl text-center">
+            Cargando personajes..
+          </p>
       </div>
     )
   }
@@ -130,7 +132,14 @@ export default function App() {
         onPageChange={handlePageChange}
       />
 
-      {modalLoading && <p className="text-center">Cargando detalle...</p>}
+      {modalLoading && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 p-4 flex flex-col items-center justify-center">
+          <LoaderCircle className="text-white animate-spin mb-1" size={64}/>
+          <p className="text-white text-2xl text-center">
+            Cargando detalles del personaje..
+          </p>
+        </div>
+      )}
 
       <CharacterModal 
         character={selectedCharacter}

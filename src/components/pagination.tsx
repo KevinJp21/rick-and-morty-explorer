@@ -15,7 +15,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: pa
     }
 
     return (
-        <div className="flex items-center justify-center gap-2 mt-8">
+        <div className="flex max-[26.25rem]:flex-col items-center justify-center gap-2 mt-8">
 
             {/* Botón Anterior */}
             <button
@@ -27,6 +27,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: pa
             </button>
 
             {/* Botones numéricos */}
+            <div className="flex gap-x-1">
             {pages.map(num => (
                 <button
                     key={num}
@@ -39,6 +40,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }: pa
                     {num}
                 </button>
             ))}
+            </div>
 
             {/* Botón Siguiente */}
             <button
