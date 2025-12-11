@@ -14,6 +14,7 @@ Aplicación React + TypeScript + Vite que permite explorar personajes de la API 
 * Arquitectura y organización
 * Ejecución y scripts
 * Decisiones clave
+* Tests implementados
 
 ---
 
@@ -96,7 +97,7 @@ El proyecto incluye pruebas unitarias para el hook `useCharacters` utilizando **
 ### Ejecutar tests
 
 ```bash
-pnpm test          # modo watch (se ejecuta continuamente)
+pnpm test
 ```
 
 ### Tests implementados
