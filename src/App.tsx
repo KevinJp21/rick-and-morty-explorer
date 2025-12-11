@@ -21,10 +21,16 @@ export default function App() {
   const [modalLoading, setModalLoading] = useState(false)
   const [modalError, setModalError] = useState<string | null>(null);
 
-  //Paginación
+  //Query params
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchFromUrl = searchParams.get("search") || "";
+
+  //Paginación  
   const pageFromUrl = Number(searchParams.get("page")) || 1;
   const [totalPages, setTotalPages] = useState(1);
+
+
+
 
   //Ocultar scroll del body cuando se abra el modal
   useEffect(() => {
@@ -44,7 +50,7 @@ export default function App() {
     try {
       setLoading(true);
       setError("")
-      const data = await getCharacters(pageFromUrl);
+      const data = await getCharacters(pageFromUrl, searchFromUrl);
       setCharacters(data.results);
       setTotalPages(data.info.pages);
     } catch (err) {
@@ -56,7 +62,7 @@ export default function App() {
 
   useEffect(() => {
     fetchCharacters();
-  }, [pageFromUrl]);
+  }, [pageFromUrl, searchFromUrl]);
 
   const handlePageChange = (page: number) => {
     setSearchParams({ page: page.toString() });
@@ -120,6 +126,17 @@ export default function App() {
             Explorer
           </span>
         </h1>
+        <input type="text" 
+          value={searchFromUrl}
+          placeholder="Buscar personaje..."
+          className="mt-6 w-full max-w-md mx-auto block px-4 py-2 border rounded-lg shadow-sm"
+          onChange={(e) => {
+            setSearchParams({
+              page: "",
+              search: e.target.value
+            })
+          }}
+        />
 
       </header>
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
