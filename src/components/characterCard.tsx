@@ -5,17 +5,26 @@ type CharacterCardProps = Pick<Character, 'name' | 'image' | 'species' | 'status
 
 export default function CharacterCard({ name, image, species, status }: CharacterCardProps) {
 
-    const statusText = status === 'Alive' ? 'Vivo' : status === 'Dead' ? 'Muerto' : 'Desconocido';
-    const statusColor = status === 'Alive' ? 'bg-green-500' : status === 'Dead' ? 'bg-red-500' : 'bg-gray-500';
+    const statusText = {
+        Alive: "Vivo",
+        Dead: "Muerto",
+        unknown: "Desconocido"
+    }
+
+    const statusColor = {
+        Alive: "bg-green-500",
+        Dead: "bg-red-500",
+        unknown: "bg-gray-500"
+    }
 
     return (
         <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2">
             <div className="relative h-64 overflow-hidden">
                 <img src={image} alt={name} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
                 <div className="absolute top-3 right-3 flex items-center gap-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md">
-                    <div className={`w-2.5 h-2.5 rounded-full ${statusColor} animate-pulse`}></div>
+                    <div className={`w-2.5 h-2.5 rounded-full ${statusColor[status]} animate-pulse`}></div>
                     <span className="text-sm font-medium text-gray-800">
-                        {statusText}
+                        {statusText[status]}
                     </span>
                 </div>
             </div>
