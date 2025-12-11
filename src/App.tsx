@@ -4,7 +4,9 @@ function App() {
 
   return (
     <main>
-      <h1>Rick and Morty Explorer</h1>
+      <h1 className='text-red-400'>
+        Rick and Morty Explorer
+        </h1>
     </main>
   )
 }
