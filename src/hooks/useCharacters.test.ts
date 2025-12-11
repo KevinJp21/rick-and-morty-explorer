@@ -148,4 +148,20 @@ describe("useCharacters", () => {
     expect(result.current.error).toBeNull();
     expect(result.current.totalPages).toBe(1);
   });
+
+  it("debe manejar otros errores correctamente", async () => {
+    const genericError = {
+        response: { status: 500 }
+    };
+    mockGetCharacters.mockRejectedValue(genericError);
+
+    const { result } = renderHook(() => useCharacters(1, ""));
+
+    await waitFor(() => {
+        expect(result.current.error).toBe(
+            "Error al cargar los personajes, intente nuevamente."
+        );
+        expect(result.current.noResults).toBe(false);
+    });
+  })
 });
