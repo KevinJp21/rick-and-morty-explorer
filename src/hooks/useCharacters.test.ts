@@ -130,4 +130,22 @@ describe("useCharacters", () => {
     expect(result.current.characters).toEqual([]);
     expect(result.current.error).toBeNull();
   });
+
+  it("debe manejar error 404 como noResults", async () => {
+    const error404 = {
+        response: {status: 404},
+    };
+    mockGetCharacters.mockRejectedValue(error404);
+
+    const { result } = renderHook(() => useCharacters(1, "Rick Andres"));
+
+    await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.noResults).toBe(true);
+    expect(result.current.characters).toEqual([]);
+    expect(result.current.error).toBeNull();
+    expect(result.current.totalPages).toBe(1);
+  });
 });
