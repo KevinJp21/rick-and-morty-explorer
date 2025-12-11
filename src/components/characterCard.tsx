@@ -5,16 +5,10 @@ type CharacterCardProps = Pick<Character, 'name' | 'image' | 'species' | 'status
 
 export default function CharacterCard({ name, image, species, status }: CharacterCardProps) {
 
-    const statusText = {
-        Alive: "Vivo",
-        Dead: "Muerto",
-        unknown: "Desconocido"
-    }
-
-    const statusColor = {
-        Alive: "bg-green-500",
-        Dead: "bg-red-500",
-        unknown: "bg-gray-500"
+    const statusInfo = {
+        Alive: {text: "Vivo", color: "bg-green-500"},
+        Dead: {text: "Muerto", color: "bg-red-500"},
+        unknown: {text: "Desconocido", color: "bg-gray-500"}
     }
 
     return (
@@ -22,9 +16,9 @@ export default function CharacterCard({ name, image, species, status }: Characte
             <div className="relative h-64 overflow-hidden">
                 <img src={image} alt={name} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
                 <div className="absolute top-3 right-3 flex items-center gap-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md">
-                    <div className={`w-2.5 h-2.5 rounded-full ${statusColor[status]} animate-pulse`}></div>
+                    <div className={`w-2.5 h-2.5 rounded-full ${statusInfo[status].color} animate-pulse`}></div>
                     <span className="text-sm font-medium text-gray-800">
-                        {statusText[status]}
+                        {statusInfo[status].text}
                     </span>
                 </div>
             </div>
