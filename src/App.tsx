@@ -4,17 +4,25 @@ import { getCharacters } from "./services/characterService"
 import type { Character } from "./types/character"
 import CharacterCard from "./components/characterCard"
 import Pagination from "./components/pagination"
+import type { CharacterDetails } from "./types/episode"
+import { getCharacterDetails } from "./services/characterDetailsService"
+import CharacterModal from "./components/characterModal"
 
 export default function App() {
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const pageFromUrl = Number(searchParams.get("page")) || 1;
-
+  //Personajes
   const [characters, setCharacters] = useState<Character[]>([])
-  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  //Ventana modal Detalles del personaje
+  const [selectedCharacter, setSelectedCharacter] = useState<CharacterDetails | null>(null);
+  const [modalLoading, setModalLoading] = useState(false)
+
+  //Paginación
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageFromUrl = Number(searchParams.get("page")) || 1;
+  const [totalPages, setTotalPages] = useState(1);
 
   const fetchCharacters = async () => {
     try {
@@ -68,6 +76,15 @@ export default function App() {
     )
   }
 
+  const openCharacterModal = async (id: number) => {
+    setModalLoading(true);
+
+    const data = await getCharacterDetails(id);
+
+    setSelectedCharacter(data);
+    setModalLoading(false);
+  }
+
   return (
     <main className="container mx-auto px-4 py-12">
       <header className="text-center mb-12">
@@ -81,14 +98,28 @@ export default function App() {
       </header>
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
         {characters.map((char) => (
-          <CharacterCard key={char.id} name={char.name} image={char.image} species={char.species} status={char.status} />
+          <CharacterCard
+            key={char.id}
+            name={char.name}
+            image={char.image}
+            species={char.species}
+            status={char.status} 
+            onClick={() => openCharacterModal(char.id)}
+            />
         ))}
       </section>
 
-      <Pagination 
+      <Pagination
         currentPage={pageFromUrl}
         totalPages={totalPages}
         onPageChange={handlePageChange}
+      />
+
+      {modalLoading && <p className="text-center">Cargando detalle...</p>}
+
+      <CharacterModal 
+        character={selectedCharacter}
+        onClose={() => setSelectedCharacter(null)}
       />
 
     </main>

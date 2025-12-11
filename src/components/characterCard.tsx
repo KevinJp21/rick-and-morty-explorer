@@ -1,9 +1,9 @@
 import type { Character } from "../types/character";
 
-type CharacterCardProps = Pick<Character, 'name' | 'image' | 'species' | 'status'>;
+type CharacterCardProps = Pick<Character, 'name' | 'image' | 'species' | 'status'> & { onClick: () => void };
 
 
-export default function CharacterCard({ name, image, species, status }: CharacterCardProps) {
+export default function CharacterCard({ name, image, species, status, onClick }: CharacterCardProps) {
 
     const statusInfo = {
         Alive: {text: "Vivo", color: "bg-green-500"},
@@ -12,7 +12,8 @@ export default function CharacterCard({ name, image, species, status }: Characte
     }
 
     return (
-        <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2">
+        <div onClick={onClick}
+        className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2">
             <div className="relative h-64 overflow-hidden">
                 <img src={image} alt={name} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
                 <div className="absolute top-3 right-3 flex items-center gap-2 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md">
