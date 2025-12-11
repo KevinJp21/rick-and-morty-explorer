@@ -19,25 +19,26 @@ export default function App() {
   //Ventana modal Detalles del personaje
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterDetails | null>(null);
   const [modalLoading, setModalLoading] = useState(false)
+  const [modalError, setModalError] = useState<string | null>(null);
 
   //Paginación
   const [searchParams, setSearchParams] = useSearchParams();
   const pageFromUrl = Number(searchParams.get("page")) || 1;
   const [totalPages, setTotalPages] = useState(1);
 
-    //Ocultar scroll del body cuando se abra el modal
-    useEffect(() => {
-      if (selectedCharacter) {
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "auto";
-      }
-  
-      return () => {
-        document.body.style.overflow = "auto";
-      };
-    }, [selectedCharacter])
-  
+  //Ocultar scroll del body cuando se abra el modal
+  useEffect(() => {
+    if (selectedCharacter) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedCharacter])
+
 
   const fetchCharacters = async () => {
     try {
@@ -70,10 +71,10 @@ export default function App() {
   if (loading) {
     return (
       <div className="text-center mt-20 flex flex-col items-center justify-center">
-        <LoaderCircle className="text-teal-500 animate-spin mb-1" size={64}/>
-          <p className="text-gray-900 text-2xl text-center">
-            Cargando personajes..
-          </p>
+        <LoaderCircle className="text-teal-500 animate-spin mb-1" size={64} />
+        <p className="text-gray-900 text-2xl text-center">
+          Cargando personajes..
+        </p>
       </div>
     )
   }
@@ -93,12 +94,20 @@ export default function App() {
   }
 
   const openCharacterModal = async (id: number) => {
-    setModalLoading(true);
 
-    const data = await getCharacterDetails(id);
+    try {
+      setModalLoading(true);
 
-    setSelectedCharacter(data);
-    setModalLoading(false);
+      const data = await getCharacterDetails(id);
+      setSelectedCharacter(data);
+      setModalLoading(false);
+    } catch (err) {
+      console.error(err);
+      setModalError("Error al cargar el personaje")
+    } finally {
+      setModalLoading(false);
+    }
+
   }
 
 
@@ -120,9 +129,9 @@ export default function App() {
             name={char.name}
             image={char.image}
             species={char.species}
-            status={char.status} 
+            status={char.status}
             onClick={() => openCharacterModal(char.id)}
-            />
+          />
         ))}
       </section>
 
@@ -132,17 +141,10 @@ export default function App() {
         onPageChange={handlePageChange}
       />
 
-      {modalLoading && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 p-4 flex flex-col items-center justify-center">
-          <LoaderCircle className="text-white animate-spin mb-1" size={64}/>
-          <p className="text-white text-2xl text-center">
-            Cargando detalles del personaje..
-          </p>
-        </div>
-      )}
-
-      <CharacterModal 
+      <CharacterModal
         character={selectedCharacter}
+        loading={modalLoading}
+        error={modalError}
         onClose={() => setSelectedCharacter(null)}
       />
 
