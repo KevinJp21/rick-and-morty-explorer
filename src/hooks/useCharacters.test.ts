@@ -105,5 +105,29 @@ describe("useCharacters", () => {
 
     expect(mockGetCharacters).toHaveBeenCalledWith(1, "Rick");
     expect(result.current.characters).toHaveLength(1);
-  })
+  });
+
+  it("debe establecer noResults cuando no hay resultados", async () =>{
+    const emptyResponse: CharacterResponse = {
+        info: {
+            count: 0,
+            pages: 0,
+            next: null,
+            prev: null,
+        },
+        results: []
+    };
+
+    mockGetCharacters.mockResolvedValue(emptyResponse);
+
+    const { result } = renderHook(() => useCharacters(1, ""));
+
+    await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.noResults).toBe(true);
+    expect(result.current.characters).toEqual([]);
+    expect(result.current.error).toBeNull();
+  });
 });
