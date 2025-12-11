@@ -14,8 +14,6 @@ Aplicación React + TypeScript + Vite que permite explorar personajes de la API 
 * Arquitectura y organización
 * Ejecución y scripts
 * Decisiones clave
-* Posibles mejoras
-* Autor y fecha
 
 ---
 
