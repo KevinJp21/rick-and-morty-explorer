@@ -70,4 +70,24 @@ describe("useCharacters", () => {
     expect(result.current.characters).toEqual([]);
     expect(result.current.error).toBeNull();
   });
+
+
+  it("debe cargar personajes exitosamente", async () => {
+    mockGetCharacters.mockResolvedValue(mockCharacterResponse);
+
+    const { result } = renderHook(() => useCharacters(1, ""));
+
+// Se espera a que el hook termine de cargar los datos.
+// `loading` cambiará de true a false cuando la promesa de getCharacters se resuelva.
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.characters).toHaveLength(2);
+    expect(result.current.characters[0].name).toBe("Rick Sanchez");
+    expect(result.current.totalPages).toBe(1);
+    expect(result.current.error).toBeNull();
+    expect(result.current.noResults).toBe(false);
+    expect(mockGetCharacters).toHaveBeenCalledWith(1, "");
+  });
 });
