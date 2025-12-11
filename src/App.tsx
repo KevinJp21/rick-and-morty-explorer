@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { getCharacters } from "./services/characterService"
 import type { Character } from "./types/character"
+import CharacterCard from "./components/characterCard"
 
 export default function App() {
   const [characters, setCharacters] = useState<Character[]>([])
@@ -26,15 +27,22 @@ export default function App() {
   }
   
   return (
-    <main>
-      <h1 className='text-red-400'>
-        Rick and Morty Explorer
+    <main className="container mx-auto px-4 py-12">
+      <header className="text-center mb-12">
+        <h1 className="text-5xl font-bold text-gray-900 mt-2">
+        Rick and Morty
+        <span className="block text-3xl text-blue-600 mt-2">
+          Explorer
+        </span>
         </h1>
-        <ul>
+
+      </header>
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
           {characters.map((char) => (
-            <li key={char.id}>{char.name}</li>
+            <CharacterCard key={char.id} name={char.name} image={char.image} species={char.species} status={char.status} />
           ))}
-        </ul>
+        </section>
+        
     </main>
   )
 }
